@@ -23,17 +23,20 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan(value = "hiber")
 public class AppConfig {
+   private final Environment environment;
 
    @Autowired
-   private Environment env;
+   AppConfig (Environment environment) {
+      this.environment = environment;
+   }
 
    @Bean
    public DataSource getDataSource() {
       DriverManagerDataSource dataSource = new DriverManagerDataSource();
-      dataSource.setDriverClassName(Objects.requireNonNull(env.getProperty("db.driver")));
-      dataSource.setUrl(env.getProperty("db.url"));
-      dataSource.setUsername(env.getProperty("db.username"));
-      dataSource.setPassword(env.getProperty("db.password"));
+      dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("db.driver")));
+      dataSource.setUrl(environment.getProperty("db.url"));
+      dataSource.setUsername(environment.getProperty("db.username"));
+      dataSource.setPassword(environment.getProperty("db.password"));
       return dataSource;
    }
 
@@ -42,9 +45,9 @@ public class AppConfig {
       LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
       factoryBean.setDataSource(getDataSource());
       
-      Properties props=new Properties();
-      props.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-      props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+      Properties props = new Properties();
+      props.put("hibernate.show_sql", environment.getProperty("hibernate.show_sql"));
+      props.put("hibernate.hbm2ddl.auto", environment.getProperty("hibernate.hbm2ddl.auto"));
 
       factoryBean.setHibernateProperties(props);
       factoryBean.setAnnotatedClasses(User.class, Car.class);
